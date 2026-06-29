@@ -3,32 +3,26 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import TinderCard from 'react-tinder-card'
 
-interface Meal {
-  idMeal: string
-  strMeal: string
-  strMealThumb: string
-  strCategory: string
-  strArea: string
+interface Dish {
+  id: string
+  name: string
+  imageUrl: string
+  category: string
+  area: string
 }
 
-async function fetchRandomMeal(): Promise<Meal | null> {
+async function fetchDishes(): Promise<Dish[]> {
   try {
-    const res = await fetch('https://www.themealdb.com/api/json/v1/1/random.php')
+    const res = await fetch('/api/dishes')
     const data = await res.json()
-    return data.meals?.[0] || null
+    return Array.isArray(data) ? data.map((d) => ({ ...d, id: String(d.id) })) : []
   } catch {
-    return null
+    return []
   }
 }
 
-async function fetchBatchMeals(count: number): Promise<Meal[]> {
-  const promises = Array.from({ length: count }, () => fetchRandomMeal())
-  const results = await Promise.all(promises)
-  return results.filter((m): m is Meal => m !== null)
-}
-
 export function SwipeClient() {
-  const [cards, setCards] = useState<Meal[]>([])
+  const [cards, setCards] = useState<Dish[]>([])
   const [loading, setLoading] = useState(true)
   const [swipeMessage, setSwipeMessage] = useState<string | null>(null)
   const currentIndexRef = useRef(-1)
@@ -38,16 +32,16 @@ export function SwipeClient() {
   useEffect(() => {
     const init = async () => {
       setLoading(true)
-      const meals = await fetchBatchMeals(10)
-      setCards(meals)
-      currentIndexRef.current = meals.length - 1
+      const dishes = await fetchDishes()
+      setCards(dishes)
+      currentIndexRef.current = dishes.length - 1
       setLoading(false)
     }
     init()
   }, [])
 
   const swiped = useCallback(
-    async (direction: string, meal: Meal, index: number) => {
+    async (direction: string, dish: Dish, index: number) => {
       currentIndexRef.current = index - 1
 
       if (direction === 'right') {
@@ -57,11 +51,11 @@ export function SwipeClient() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              mealId: meal.idMeal,
-              mealName: meal.strMeal,
-              mealThumb: meal.strMealThumb,
-              category: meal.strCategory,
-              area: meal.strArea,
+              mealId: dish.id,
+              mealName: dish.name,
+              mealThumb: dish.imageUrl,
+              category: dish.category,
+              area: dish.area,
             }),
           })
         } catch (err) {
@@ -74,10 +68,10 @@ export function SwipeClient() {
       setTimeout(() => setSwipeMessage(null), 1500)
 
       if (index - 1 < 3) {
-        const newMeals = await fetchBatchMeals(5)
+        const newDishes = await fetchDishes()
         setCards((prev) => {
-          const updated = [...newMeals, ...prev]
-          currentIndexRef.current = currentIndexRef.current + newMeals.length
+          const updated = [...newDishes, ...prev]
+          currentIndexRef.current = currentIndexRef.current + newDishes.length
           return updated
         })
       }
@@ -88,8 +82,8 @@ export function SwipeClient() {
   const swipe = async (dir: 'left' | 'right') => {
     const idx = currentIndexRef.current
     if (idx < 0 || idx >= cards.length) return
-    const currentMeal = cards[idx]
-    const ref = childRefs.current.get(currentMeal.idMeal)
+    const currentDish = cards[idx]
+    const ref = childRefs.current.get(currentDish.id)
     if (ref) {
       await ref.swipe(dir)
     }
@@ -115,14 +109,14 @@ export function SwipeClient() {
       )}
 
       <div className="relative w-full max-w-sm" style={{ height: '480px' }}>
-        {cards.map((meal, index) => (
+        {cards.map((dish, index) => (
           <TinderCard
-            key={meal.idMeal}
+            key={`${dish.id}-${index}`}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             ref={(ref: any) => {
-              if (ref) childRefs.current.set(meal.idMeal, ref)
+              if (ref) childRefs.current.set(dish.id, ref)
             }}
-            onSwipe={(dir) => swiped(dir, meal, index)}
+            onSwipe={(dir) => swiped(dir, dish, index)}
             preventSwipe={['up', 'down']}
             className="absolute w-full"
           >
@@ -130,7 +124,7 @@ export function SwipeClient() {
               className="relative w-full rounded-2xl overflow-hidden shadow-2xl cursor-grab active:cursor-grabbing select-none"
               style={{
                 height: '480px',
-                backgroundImage: `url(${meal.strMealThumb})`,
+                backgroundImage: `url(${dish.imageUrl})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
               }}
@@ -138,17 +132,17 @@ export function SwipeClient() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/10" />
               <div className="absolute bottom-0 left-0 right-0 p-5">
                 <h2 className="text-white text-2xl font-bold leading-tight mb-2">
-                  {meal.strMeal}
+                  {dish.name}
                 </h2>
                 <div className="flex gap-2 flex-wrap">
-                  {meal.strCategory && (
+                  {dish.category && (
                     <span className="bg-orange-500/80 text-white text-xs font-medium px-3 py-1 rounded-full">
-                      {meal.strCategory}
+                      {dish.category}
                     </span>
                   )}
-                  {meal.strArea && (
+                  {dish.area && (
                     <span className="bg-amber-600/80 text-white text-xs font-medium px-3 py-1 rounded-full">
-                      {meal.strArea}
+                      {dish.area}
                     </span>
                   )}
                 </div>
