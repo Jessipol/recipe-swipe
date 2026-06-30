@@ -62,18 +62,21 @@ export function SwipeClient() {
     if (dish) {
       if (dir === 'right') {
         try {
-          const res = await fetch('/api/meal-plan', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+          const key = 'recipe-swipe-meal-plan'
+          const existing: { mealId: string }[] = JSON.parse(localStorage.getItem(key) || '[]')
+          if (!existing.find((m) => m.mealId === dish.id)) {
+            existing.unshift({
+              id: `${dish.id}-${Date.now()}`,
               mealId: dish.id,
               mealName: dish.name,
               mealThumb: dish.imageUrl,
               category: dish.category,
               area: dish.area,
-            }),
-          })
-          setSwipeMessage(res.ok ? 'Added to meal plan! ❤️' : 'Could not save, try again ⚠️')
+              addedAt: new Date().toISOString(),
+            })
+            localStorage.setItem(key, JSON.stringify(existing))
+          }
+          setSwipeMessage('Added to meal plan! ❤️')
         } catch {
           setSwipeMessage('Could not save, try again ⚠️')
         }

@@ -20,49 +20,32 @@ export function MealPlanClient() {
   const [confirmReset, setConfirmReset] = useState(false)
   const [resetting, setResetting] = useState(false)
 
-  const fetchMealPlan = async () => {
-    try {
-      const res = await fetch('/api/meal-plan')
-      if (res.ok) {
-        const data = await res.json()
-        setMeals(data)
-      }
-    } catch (err) {
-      console.error('Error fetching meal plan:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const STORAGE_KEY = 'recipe-swipe-meal-plan'
 
   useEffect(() => {
-    fetchMealPlan()
+    try {
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+      setMeals(data)
+    } catch {
+      setMeals([])
+    }
+    setLoading(false)
   }, [])
 
-  const removeFromMealPlan = async (mealId: string) => {
+  const removeFromMealPlan = (mealId: string) => {
     setRemoving(mealId)
-    try {
-      const res = await fetch(`/api/meal-plan/${mealId}`, { method: 'DELETE' })
-      if (res.ok) {
-        setMeals((prev) => prev.filter((m) => m.mealId !== mealId))
-      }
-    } catch (err) {
-      console.error('Error removing from meal plan:', err)
-    } finally {
-      setRemoving(null)
-    }
+    const updated = meals.filter((m) => m.mealId !== mealId)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+    setMeals(updated)
+    setRemoving(null)
   }
 
-  const resetMealPlan = async () => {
+  const resetMealPlan = () => {
     setResetting(true)
-    try {
-      await fetch('/api/meal-plan', { method: 'DELETE' })
-      setMeals([])
-    } catch (err) {
-      console.error('Error resetting meal plan:', err)
-    } finally {
-      setResetting(false)
-      setConfirmReset(false)
-    }
+    localStorage.removeItem(STORAGE_KEY)
+    setMeals([])
+    setResetting(false)
+    setConfirmReset(false)
   }
 
   if (loading) {
