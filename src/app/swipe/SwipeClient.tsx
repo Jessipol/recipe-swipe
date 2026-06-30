@@ -159,6 +159,7 @@ export function SwipeClient() {
       <div className="relative w-full max-w-sm" style={{ height: '480px' }}>
         {thirdDish && (
           <div
+            key={thirdDish.id}
             className="absolute w-full rounded-2xl overflow-hidden shadow-xl pointer-events-none"
             style={{
               height: '480px',
@@ -173,6 +174,7 @@ export function SwipeClient() {
 
         {nextDish && (
           <div
+            key={nextDish.id}
             className="absolute w-full rounded-2xl overflow-hidden shadow-xl pointer-events-none"
             style={{
               height: '480px',
@@ -186,6 +188,7 @@ export function SwipeClient() {
         )}
 
         <div
+          key={currentDish.id}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
