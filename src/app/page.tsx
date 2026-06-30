@@ -11,43 +11,87 @@ export default async function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-orange-950 via-red-950 to-amber-950 flex flex-col items-center justify-center p-4">
-      <div className="text-center max-w-md">
-        <div className="text-8xl mb-6">🍽️</div>
-        <h1 className="text-5xl font-bold text-orange-100 mb-4">
+    <main
+      style={{
+        minHeight: '100dvh',
+        backgroundColor: '#0A0908',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px',
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+      }}
+    >
+      <div style={{ textAlign: 'center', maxWidth: 360, width: '100%' }}>
+        <div style={{ fontSize: 96, lineHeight: 1, marginBottom: 24 }}>🍽️</div>
+
+        <h1
+          style={{
+            fontSize: 36,
+            fontWeight: 800,
+            color: '#FFFFFF',
+            marginBottom: 12,
+            letterSpacing: -0.5,
+          }}
+        >
           Recipe Swipe
         </h1>
-        <p className="text-orange-300 text-lg mb-8">
-          Discover delicious recipes with a swipe. Right for your meal plan,
-          left to skip.
+
+        <p
+          style={{
+            fontSize: 16,
+            color: 'rgba(255,255,255,0.55)',
+            lineHeight: 1.6,
+            marginBottom: 40,
+          }}
+        >
+          Swipe through hundreds of recipes and build your personal meal plan in seconds.
+          Swipe right to save, left to skip — it&apos;s that simple.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+            width: '100%',
+          }}
+        >
           <Link
             href="/auth/login"
-            className="bg-orange-500 hover:bg-orange-400 text-white font-semibold py-3 px-8 rounded-full transition-colors duration-200 text-center"
+            style={{
+              display: 'block',
+              backgroundColor: '#FF6B2C',
+              color: '#FFFFFF',
+              fontWeight: 700,
+              fontSize: 17,
+              padding: '16px 32px',
+              borderRadius: 999,
+              textDecoration: 'none',
+              textAlign: 'center',
+            }}
           >
             Sign In
           </Link>
           <Link
             href="/auth/register"
-            className="border-2 border-orange-400 text-orange-300 hover:bg-orange-900 font-semibold py-3 px-8 rounded-full transition-colors duration-200 text-center"
+            style={{
+              display: 'block',
+              border: '2px solid #FF6B2C',
+              color: '#FF6B2C',
+              fontWeight: 700,
+              fontSize: 17,
+              padding: '14px 32px',
+              borderRadius: 999,
+              textDecoration: 'none',
+              textAlign: 'center',
+              backgroundColor: 'transparent',
+            }}
           >
             Create Account
           </Link>
-        </div>
-        <div className="mt-12 grid grid-cols-3 gap-6 text-center">
-          <div>
-            <div className="text-3xl mb-2">👈</div>
-            <p className="text-orange-400 text-sm">Swipe left to skip</p>
-          </div>
-          <div>
-            <div className="text-3xl mb-2">❤️</div>
-            <p className="text-orange-400 text-sm">Find new favorites</p>
-          </div>
-          <div>
-            <div className="text-3xl mb-2">👉</div>
-            <p className="text-orange-400 text-sm">Swipe right to save</p>
-          </div>
         </div>
       </div>
     </main>

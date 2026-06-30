@@ -31,68 +31,133 @@ export default function LoginPage() {
     }
   }
 
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    backgroundColor: '#221C17',
+    border: '1px solid rgba(255,255,255,0.07)',
+    borderRadius: 12,
+    padding: '14px 16px',
+    fontSize: 16,
+    color: '#FFFFFF',
+    outline: 'none',
+    boxSizing: 'border-box',
+  }
+
+  const labelStyle: React.CSSProperties = {
+    display: 'block',
+    fontSize: 13,
+    fontWeight: 600,
+    color: 'rgba(255,255,255,0.55)',
+    marginBottom: 6,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  }
+
   return (
-    <main className="min-h-screen bg-gradient-to-br from-orange-950 via-red-950 to-amber-950 flex items-center justify-center p-4">
-      <div className="bg-orange-950/60 backdrop-blur border border-orange-800/40 rounded-2xl p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="text-5xl mb-3">🍽️</div>
-          <h1 className="text-3xl font-bold text-orange-100">Welcome Back</h1>
-          <p className="text-orange-400 mt-1">Sign in to continue swiping</p>
+    <main
+      style={{
+        minHeight: '100dvh',
+        backgroundColor: '#0A0908',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px',
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+      }}
+    >
+      <div style={{ width: '100%', maxWidth: 400 }}>
+        {/* Logo + title */}
+        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+          <div style={{ fontSize: 64, lineHeight: 1, marginBottom: 16 }}>🍽️</div>
+          <h1 style={{ fontSize: 28, fontWeight: 800, color: '#FFFFFF', marginBottom: 6 }}>
+            Welcome Back
+          </h1>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.55)' }}>
+            Sign in to continue swiping
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-sm">
-              {error}
+        {/* Form card */}
+        <div
+          style={{
+            backgroundColor: '#18140F',
+            border: '1px solid rgba(255,255,255,0.07)',
+            borderRadius: 24,
+            padding: '28px 24px',
+          }}
+        >
+          <form onSubmit={handleSubmit}>
+            {error && (
+              <div
+                style={{
+                  backgroundColor: 'rgba(255,69,58,0.15)',
+                  border: '1px solid rgba(255,69,58,0.4)',
+                  borderRadius: 10,
+                  padding: '12px 14px',
+                  marginBottom: 16,
+                  fontSize: 14,
+                  color: '#FF453A',
+                }}
+              >
+                {error}
+              </div>
+            )}
+
+            <div style={{ marginBottom: 16 }}>
+              <label style={labelStyle}>Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="you@example.com"
+                style={inputStyle}
+              />
             </div>
-          )}
 
-          <div>
-            <label className="block text-orange-300 text-sm font-medium mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full bg-orange-900/40 border border-orange-700/50 text-orange-100 placeholder-orange-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
-              placeholder="you@example.com"
-            />
-          </div>
+            <div style={{ marginBottom: 24 }}>
+              <label style={labelStyle}>Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="••••••••"
+                style={inputStyle}
+              />
+            </div>
 
-          <div>
-            <label className="block text-orange-300 text-sm font-medium mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full bg-orange-900/40 border border-orange-700/50 text-orange-100 placeholder-orange-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
-              placeholder="••••••••"
-            />
-          </div>
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: '100%',
+                backgroundColor: loading ? 'rgba(255,107,44,0.4)' : '#FF6B2C',
+                color: '#FFFFFF',
+                fontWeight: 700,
+                fontSize: 17,
+                padding: '16px',
+                borderRadius: 14,
+                border: 'none',
+                cursor: loading ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {loading ? 'Signing in...' : 'Sign In'}
+            </button>
+          </form>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-orange-500 hover:bg-orange-400 disabled:bg-orange-800 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 mt-2"
-          >
-            {loading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
-
-        <p className="text-center text-orange-400 mt-6 text-sm">
-          Don&apos;t have an account?{' '}
-          <Link
-            href="/auth/register"
-            className="text-orange-300 hover:text-orange-100 font-medium"
-          >
-            Create one
-          </Link>
-        </p>
+          <p style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: 'rgba(255,255,255,0.35)' }}>
+            Don&apos;t have an account?{' '}
+            <Link
+              href="/auth/register"
+              style={{ color: '#FF6B2C', fontWeight: 600, textDecoration: 'none' }}
+            >
+              Create one
+            </Link>
+          </p>
+        </div>
       </div>
     </main>
   )

@@ -10,43 +10,76 @@ export function NavBar() {
 
   if (!session) return null
 
-  return (
-    <nav className="bg-orange-950/80 backdrop-blur border-b border-orange-800/40 sticky top-0 z-50">
-      <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-1">
-          <span className="text-xl">🍽️</span>
-          <span className="text-orange-100 font-bold text-lg">RecipeSwipe</span>
-        </div>
+  const tabs = [
+    { href: '/swipe', label: 'Discover', icon: '🍽️' },
+    { href: '/meal-plan', label: 'My Plan', icon: '📋' },
+  ]
 
-        <div className="flex items-center gap-2">
+  return (
+    <nav
+      style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        backgroundColor: 'rgba(10,9,8,0.85)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderTop: '1px solid rgba(255,255,255,0.07)',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        display: 'flex',
+        alignItems: 'stretch',
+      }}
+    >
+      {tabs.map((tab) => {
+        const active = pathname === tab.href
+        return (
           <Link
-            href="/swipe"
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              pathname === '/swipe'
-                ? 'bg-orange-500 text-white'
-                : 'text-orange-300 hover:text-orange-100 hover:bg-orange-900/50'
-            }`}
+            key={tab.href}
+            href={tab.href}
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingTop: 10,
+              paddingBottom: 10,
+              gap: 3,
+              color: active ? '#FF6B2C' : 'rgba(255,255,255,0.35)',
+              textDecoration: 'none',
+              minHeight: 56,
+            }}
           >
-            Swipe
+            <span style={{ fontSize: 22 }}>{tab.icon}</span>
+            <span style={{ fontSize: 11, fontWeight: active ? 600 : 400, letterSpacing: 0.2 }}>
+              {tab.label}
+            </span>
           </Link>
-          <Link
-            href="/meal-plan"
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              pathname === '/meal-plan'
-                ? 'bg-orange-500 text-white'
-                : 'text-orange-300 hover:text-orange-100 hover:bg-orange-900/50'
-            }`}
-          >
-            Meal Plan
-          </Link>
-          <button
-            onClick={() => signOut({ callbackUrl: '/' })}
-            className="text-orange-400 hover:text-orange-200 text-sm px-2 py-1.5 rounded-lg hover:bg-orange-900/50 transition-colors"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
+        )
+      })}
+      <button
+        onClick={() => signOut({ callbackUrl: '/' })}
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingTop: 10,
+          paddingBottom: 10,
+          gap: 3,
+          color: 'rgba(255,255,255,0.35)',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          minHeight: 56,
+        }}
+      >
+        <span style={{ fontSize: 22 }}>👋</span>
+        <span style={{ fontSize: 11, fontWeight: 400, letterSpacing: 0.2 }}>Sign Out</span>
+      </button>
     </nav>
   )
 }

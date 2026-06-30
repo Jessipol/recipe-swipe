@@ -1,4 +1,4 @@
-﻿import { getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { NavBar } from '@/components/NavBar'
@@ -10,7 +10,7 @@ export default async function MealPlanPage() {
     redirect('/auth/login')
   }
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-950 via-red-950 to-amber-950">
+    <div style={{ minHeight: '100dvh', backgroundColor: '#0A0908' }}>
       <NavBar />
       <MealPlanClient />
     </div>

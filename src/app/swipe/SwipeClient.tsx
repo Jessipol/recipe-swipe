@@ -129,10 +129,18 @@ export function SwipeClient() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[80vh]">
-        <div className="text-center">
-          <div className="text-6xl animate-bounce mb-4">🍳</div>
-          <p className="text-orange-300 text-lg">Loading delicious recipes...</p>
+      <div
+        style={{
+          minHeight: '100dvh',
+          backgroundColor: '#0A0908',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 64, marginBottom: 16 }}>🍳</div>
+          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 17 }}>Loading delicious recipes...</p>
         </div>
       </div>
     )
@@ -149,25 +157,62 @@ export function SwipeClient() {
   const showLike = !isDragging ? false : offset.x > 30
 
   return (
-    <div className="flex flex-col items-center justify-start pt-6 px-4 pb-8 min-h-[calc(100vh-64px)]">
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100dvh',
+        backgroundColor: '#0A0908',
+        overscrollBehavior: 'none',
+        paddingTop: 'env(safe-area-inset-top)',
+      }}
+    >
       {swipeMessage && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-orange-900/90 border border-orange-600 text-orange-100 px-6 py-3 rounded-full text-sm font-medium shadow-lg">
+        <div
+          style={{
+            position: 'fixed',
+            top: 80,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 100,
+            backgroundColor: 'rgba(34,28,23,0.95)',
+            border: '1px solid rgba(255,255,255,0.12)',
+            color: '#FFFFFF',
+            padding: '12px 24px',
+            borderRadius: 999,
+            fontSize: 14,
+            fontWeight: 600,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+          }}
+        >
           {swipeMessage}
         </div>
       )}
 
-      <div className="relative w-full max-w-sm" style={{ height: '480px' }}>
+      {/* Header */}
+      <div style={{ padding: '16px 20px 8px' }}>
+        <h1 style={{ fontSize: 28, fontWeight: 800, color: '#FFFFFF', margin: 0 }}>Discover</h1>
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)', margin: 0, marginTop: 2 }}>
+          Swipe right to save, left to skip
+        </p>
+      </div>
+
+      {/* Card stack — flex-1 */}
+      <div style={{ flex: 1, position: 'relative', padding: '8px 16px' }}>
         {thirdDish && (
           <div
             key={thirdDish.id}
-            className="absolute w-full rounded-2xl overflow-hidden shadow-xl pointer-events-none"
             style={{
-              height: '480px',
+              position: 'absolute',
+              inset: '8px 16px',
+              borderRadius: 28,
+              overflow: 'hidden',
               backgroundImage: `url(${thirdDish.imageUrl})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              transform: 'scale(0.92) translateY(16px)',
+              transform: 'scale(0.94) translateY(12px)',
               zIndex: 1,
+              pointerEvents: 'none',
             }}
           />
         )}
@@ -175,14 +220,17 @@ export function SwipeClient() {
         {nextDish && (
           <div
             key={nextDish.id}
-            className="absolute w-full rounded-2xl overflow-hidden shadow-xl pointer-events-none"
             style={{
-              height: '480px',
+              position: 'absolute',
+              inset: '8px 16px',
+              borderRadius: 28,
+              overflow: 'hidden',
               backgroundImage: `url(${nextDish.imageUrl})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              transform: 'scale(0.96) translateY(8px)',
+              transform: 'scale(0.97) translateY(6px)',
               zIndex: 2,
+              pointerEvents: 'none',
             }}
           />
         )}
@@ -193,9 +241,11 @@ export function SwipeClient() {
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
-          className="absolute w-full rounded-2xl overflow-hidden shadow-2xl select-none"
           style={{
-            height: '480px',
+            position: 'absolute',
+            inset: '8px 16px',
+            borderRadius: 28,
+            overflow: 'hidden',
             backgroundImage: `url(${currentDish.imageUrl})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
@@ -204,32 +254,95 @@ export function SwipeClient() {
             zIndex: 3,
             cursor: isDragging ? 'grabbing' : 'grab',
             touchAction: 'none',
+            userSelect: 'none',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
           }}
         >
+          {/* NOPE indicator */}
           {showNope && (
-            <div className="absolute top-6 right-6 border-4 border-red-500 text-red-500 font-bold text-2xl px-3 py-1 rounded-lg rotate-12 opacity-90">
+            <div
+              style={{
+                position: 'absolute',
+                top: 24,
+                right: 20,
+                border: '4px solid #FF453A',
+                color: '#FF453A',
+                fontWeight: 900,
+                fontSize: 28,
+                padding: '4px 12px',
+                borderRadius: 10,
+                transform: 'rotate(12deg)',
+                opacity: 0.95,
+                letterSpacing: 2,
+              }}
+            >
               NOPE
             </div>
           )}
+          {/* LIKE indicator */}
           {showLike && (
-            <div className="absolute top-6 left-6 border-4 border-green-500 text-green-500 font-bold text-2xl px-3 py-1 rounded-lg -rotate-12 opacity-90">
+            <div
+              style={{
+                position: 'absolute',
+                top: 24,
+                left: 20,
+                border: '4px solid #30D158',
+                color: '#30D158',
+                fontWeight: 900,
+                fontSize: 28,
+                padding: '4px 12px',
+                borderRadius: 10,
+                transform: 'rotate(-12deg)',
+                opacity: 0.95,
+                letterSpacing: 2,
+              }}
+            >
               LIKE
             </div>
           )}
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/10" />
-          <div className="absolute bottom-0 left-0 right-0 p-5">
-            <h2 className="text-white text-2xl font-bold leading-tight mb-2">
+          {/* Gradient overlay */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.05) 100%)',
+            }}
+          />
+
+          {/* Dish info */}
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px 20px 24px' }}>
+            <h2 style={{ color: '#FFFFFF', fontSize: 24, fontWeight: 700, lineHeight: 1.2, margin: 0, marginBottom: 10 }}>
               {currentDish.name}
             </h2>
-            <div className="flex gap-2 flex-wrap">
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {currentDish.category && (
-                <span className="bg-orange-500/80 text-white text-xs font-medium px-3 py-1 rounded-full">
+                <span
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.18)',
+                    color: '#FFFFFF',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    padding: '4px 12px',
+                    borderRadius: 999,
+                    backdropFilter: 'blur(8px)',
+                  }}
+                >
                   {currentDish.category}
                 </span>
               )}
               {currentDish.area && (
-                <span className="bg-amber-600/80 text-white text-xs font-medium px-3 py-1 rounded-full">
+                <span
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.18)',
+                    color: '#FFFFFF',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    padding: '4px 12px',
+                    borderRadius: 999,
+                    backdropFilter: 'blur(8px)',
+                  }}
+                >
                   {currentDish.area}
                 </span>
               )}
@@ -238,29 +351,62 @@ export function SwipeClient() {
         </div>
       </div>
 
-      <div className="flex gap-6 mt-8 items-center">
+      {/* Action buttons */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 32,
+          paddingTop: 16,
+          paddingBottom: 16,
+        }}
+      >
         <button
           onClick={() => doSwipe('left')}
-          disabled={swipingRef.current}
-          className="w-16 h-16 rounded-full bg-orange-950 border-2 border-red-500/60 text-red-400 hover:bg-red-900/30 hover:border-red-400 transition-all duration-200 flex items-center justify-center text-2xl shadow-lg hover:scale-110 active:scale-95 disabled:opacity-50"
+          style={{
+            width: 64,
+            height: 64,
+            borderRadius: '50%',
+            border: '2px solid #FF453A',
+            backgroundColor: 'transparent',
+            color: '#FF453A',
+            fontSize: 24,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            flexShrink: 0,
+          }}
           title="Skip"
         >
           ✕
         </button>
-        <div className="text-orange-500/40 text-sm font-medium">swipe or tap</div>
         <button
           onClick={() => doSwipe('right')}
-          disabled={swipingRef.current}
-          className="w-16 h-16 rounded-full bg-orange-950 border-2 border-green-500/60 text-green-400 hover:bg-green-900/30 hover:border-green-400 transition-all duration-200 flex items-center justify-center text-2xl shadow-lg hover:scale-110 active:scale-95 disabled:opacity-50"
+          style={{
+            width: 64,
+            height: 64,
+            borderRadius: '50%',
+            border: 'none',
+            backgroundColor: '#FF6B2C',
+            color: '#FFFFFF',
+            fontSize: 24,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            flexShrink: 0,
+            boxShadow: '0 4px 20px rgba(255,107,44,0.4)',
+          }}
           title="Add to meal plan"
         >
-          ❤
+          ♥
         </button>
       </div>
 
-      <p className="mt-4 text-orange-500/60 text-xs">
-        Swipe right to save to your meal plan
-      </p>
+      {/* Spacer matching bottom tab bar height */}
+      <div style={{ height: 'calc(56px + env(safe-area-inset-bottom))' }} />
     </div>
   )
 }
