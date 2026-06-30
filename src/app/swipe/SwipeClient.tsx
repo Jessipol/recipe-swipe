@@ -10,6 +10,16 @@ interface Dish {
   area: string
 }
 
+interface StoredMeal {
+  id: string
+  mealId: string
+  mealName: string
+  mealThumb: string
+  category: string
+  area: string
+  addedAt: string
+}
+
 async function fetchDishes(): Promise<Dish[]> {
   try {
     const res = await fetch('/api/dishes')
@@ -63,7 +73,7 @@ export function SwipeClient() {
       if (dir === 'right') {
         try {
           const key = 'recipe-swipe-meal-plan'
-          const existing: { mealId: string }[] = JSON.parse(localStorage.getItem(key) || '[]')
+          const existing = JSON.parse(localStorage.getItem(key) || '[]') as StoredMeal[]
           if (!existing.find((m) => m.mealId === dish.id)) {
             existing.unshift({
               id: `${dish.id}-${Date.now()}`,
