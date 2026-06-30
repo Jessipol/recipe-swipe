@@ -17,6 +17,8 @@ export function MealPlanClient() {
   const [meals, setMeals] = useState<MealPlanItem[]>([])
   const [loading, setLoading] = useState(true)
   const [removing, setRemoving] = useState<string | null>(null)
+  const [confirmReset, setConfirmReset] = useState(false)
+  const [resetting, setResetting] = useState(false)
 
   const fetchMealPlan = async () => {
     try {
@@ -50,6 +52,19 @@ export function MealPlanClient() {
     }
   }
 
+  const resetMealPlan = async () => {
+    setResetting(true)
+    try {
+      await fetch('/api/meal-plan', { method: 'DELETE' })
+      setMeals([])
+    } catch (err) {
+      console.error('Error resetting meal plan:', err)
+    } finally {
+      setResetting(false)
+      setConfirmReset(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[80vh]">
@@ -63,11 +78,42 @@ export function MealPlanClient() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-orange-100">Your Meal Plan</h1>
-        <p className="text-orange-400 mt-1">
-          {meals.length} recipe{meals.length !== 1 ? 's' : ''} saved
-        </p>
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-orange-100">Your Meal Plan</h1>
+          <p className="text-orange-400 mt-1">
+            {meals.length} recipe{meals.length !== 1 ? 's' : ''} saved
+          </p>
+        </div>
+        {meals.length > 0 && (
+          <div className="flex items-center gap-2 mt-1">
+            {confirmReset ? (
+              <>
+                <span className="text-orange-300 text-sm">Clear all?</span>
+                <button
+                  onClick={resetMealPlan}
+                  disabled={resetting}
+                  className="bg-red-700 hover:bg-red-600 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {resetting ? '...' : 'Yes'}
+                </button>
+                <button
+                  onClick={() => setConfirmReset(false)}
+                  className="bg-orange-900 hover:bg-orange-800 text-orange-200 text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  No
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setConfirmReset(true)}
+                className="bg-orange-900/60 hover:bg-red-900/40 border border-orange-700/40 hover:border-red-600/60 text-orange-400 hover:text-red-400 text-sm font-medium px-4 py-1.5 rounded-lg transition-colors"
+              >
+                Reset
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {meals.length === 0 ? (
