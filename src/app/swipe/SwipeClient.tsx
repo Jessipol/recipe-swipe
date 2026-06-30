@@ -52,15 +52,17 @@ export function SwipeClient() {
     draggingRef.current = false
     setIsDragging(false)
 
+    // Capture dish and index before any async wait
+    const dish = dishesRef.current[indexRef.current]
+    const capturedIndex = indexRef.current
+
     setOffset({ x: dir === 'right' ? 800 : -800, y: 0 })
     await new Promise((r) => setTimeout(r, 350))
 
-    const dish = dishesRef.current[indexRef.current]
     if (dish) {
       if (dir === 'right') {
-        setSwipeMessage('Added to meal plan! ❤️')
         try {
-          await fetch('/api/meal-plan', {
+          const res = await fetch('/api/meal-plan', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -71,16 +73,17 @@ export function SwipeClient() {
               area: dish.area,
             }),
           })
-        } catch (err) {
-          console.error('Error saving to meal plan:', err)
+          setSwipeMessage(res.ok ? 'Added to meal plan! ❤️' : 'Could not save, try again ⚠️')
+        } catch {
+          setSwipeMessage('Could not save, try again ⚠️')
         }
       } else {
         setSwipeMessage('Skipped 👋')
       }
-      setTimeout(() => setSwipeMessage(null), 1500)
+      setTimeout(() => setSwipeMessage(null), 2000)
     }
 
-    const next = indexRef.current + 1
+    const next = capturedIndex + 1
     if (next >= dishesRef.current.length) {
       const newDishes = await fetchDishes()
       dishesRef.current = newDishes
