@@ -13,6 +13,8 @@ interface MealPlanItem {
   addedAt: string
 }
 
+const STORAGE_KEY = 'recipe-swipe-meal-plan'
+
 export function MealPlanClient() {
   const [meals, setMeals] = useState<MealPlanItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -20,28 +22,85 @@ export function MealPlanClient() {
   const [confirmReset, setConfirmReset] = useState(false)
   const [resetting, setResetting] = useState(false)
 
-  const STORAGE_KEY = 'recipe-swipe-meal-plan'
-
   useEffect(() => {
-    try {
-      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
-      setMeals(data)
-    } catch {
-      setMeals([])
+    async function loadMeals() {
+      try {
+        const res = await fetch('/api/meal-plan')
+        if (res.ok) {
+          const dbMeals: MealPlanItem[] = await res.json()
+          const dbMealIds = new Set(dbMeals.map((m) => m.mealId))
+
+          // Sync any localStorage items not yet in DB
+          try {
+            const localItems = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') as MealPlanItem[]
+            const toSync = localItems.filter((m) => !dbMealIds.has(m.mealId))
+            if (toSync.length > 0) {
+              await Promise.all(
+                toSync.map((item) =>
+                  fetch('/api/meal-plan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      mealId: item.mealId,
+                      mealName: item.mealName,
+                      mealThumb: item.mealThumb,
+                      category: item.category,
+                      area: item.area,
+                    }),
+                  }).catch(() => {})
+                )
+              )
+              const res2 = await fetch('/api/meal-plan')
+              if (res2.ok) {
+                setMeals(await res2.json())
+                setLoading(false)
+                return
+              }
+            }
+          } catch {
+            // sync failed, use DB data as-is
+          }
+
+          setMeals(dbMeals)
+        } else {
+          // Fall back to localStorage if API fails
+          const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+          setMeals(data)
+        }
+      } catch {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+        setMeals(data)
+      }
+      setLoading(false)
     }
-    setLoading(false)
+    loadMeals()
   }, [])
 
-  const removeFromMealPlan = (mealId: string) => {
+  const removeFromMealPlan = async (mealId: string) => {
     setRemoving(mealId)
+    try {
+      await fetch(`/api/meal-plan/${mealId}`, { method: 'DELETE' })
+    } catch {
+      // ignore
+    }
     const updated = meals.filter((m) => m.mealId !== mealId)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
     setMeals(updated)
+    try {
+      const local = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') as MealPlanItem[]
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(local.filter((m) => m.mealId !== mealId)))
+    } catch {
+      // ignore
+    }
     setRemoving(null)
   }
 
-  const resetMealPlan = () => {
+  const resetMealPlan = async () => {
     setResetting(true)
+    try {
+      await fetch('/api/meal-plan', { method: 'DELETE' })
+    } catch {
+      // ignore
+    }
     localStorage.removeItem(STORAGE_KEY)
     setMeals([])
     setResetting(false)

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useSession } from 'next-auth/react'
 
 interface Dish {
   id: string
@@ -33,6 +34,7 @@ async function fetchDishes(): Promise<Dish[]> {
 const SWIPE_THRESHOLD = 80
 
 export function SwipeClient() {
+  const { data: session } = useSession()
   const [dishes, setDishes] = useState<Dish[]>([])
   const [loading, setLoading] = useState(true)
   const [index, setIndex] = useState(0)
@@ -85,6 +87,19 @@ export function SwipeClient() {
               addedAt: new Date().toISOString(),
             })
             localStorage.setItem(key, JSON.stringify(existing))
+          }
+          if (session) {
+            fetch('/api/meal-plan', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                mealId: dish.id,
+                mealName: dish.name,
+                mealThumb: dish.imageUrl,
+                category: dish.category,
+                area: dish.area,
+              }),
+            }).catch(() => {})
           }
           setSwipeMessage('Added to meal plan! ❤️')
         } catch {

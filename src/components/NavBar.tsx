@@ -13,6 +13,7 @@ export function NavBar() {
   const tabs = [
     { href: '/swipe', label: 'Discover', icon: '🍽️' },
     { href: '/meal-plan', label: 'My Plan', icon: '📋' },
+    { href: '/matches', label: 'Matches', icon: '❤️' },
   ]
 
   return (
